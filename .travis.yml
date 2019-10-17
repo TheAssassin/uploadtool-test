@@ -1,0 +1,18 @@
+language: cpp
+dist: xenial
+
+notifications:
+  email: false
+
+script:
+  - dd if=/dev/urandom of=testfile bs=100k count=1
+
+after_success:
+  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  - if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_TAG" == "" ]; then export TRAVIS_EVENT_TYPE=pull_request; fi
+  - bash upload.sh testfile
+
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)/
